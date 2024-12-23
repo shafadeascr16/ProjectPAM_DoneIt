@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="217dp"
         android:hint="Task Name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,6 +21,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/taskName"
+            android:fontFamily="@font/poppins_regular"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -40,7 +41,8 @@
     <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/taskDescription"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_regular"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -58,6 +60,7 @@
 
         <AutoCompleteTextView
             android:id="@+id/priorityDropdown"
+            android:fontFamily="@font/poppins_regular"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="none" />
@@ -79,6 +82,7 @@
 
         <AutoCompleteTextView
             android:id="@+id/dueDateDropdown"
+            android:fontFamily="@font/poppins_regular"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="none" />
@@ -99,6 +103,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/locationTextField"
+            android:fontFamily="@font/poppins_regular"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         />
@@ -112,8 +117,25 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:text="Save Task"
+        android:fontFamily="@font/poppins_bold"
+        android:textSize="18sp"
+        android:backgroundTint="#1187DE"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/locationMenu" />
+
+    <ImageView
+        android:id="@+id/list"
+        android:layout_width="300dp"
+        android:layout_height="183dp"
+        android:layout_marginBottom="8dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/list"
+        android:scaleType="fitCenter"
+        android:src="@drawable/list"
+        app:layout_constraintBottom_toTopOf="@id/taskNameTextField"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.594"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -27,6 +27,7 @@
     <string name="please_login_to_continue">Please Login to continue</string>
     <string name="doneit">DONEIT</string>
     <string name="reglog">REGLOG</string>
+    <string name="list">LIST</string>
     <string-array name="priority">
         <item>Low</item>
         <item>Medium</item>
