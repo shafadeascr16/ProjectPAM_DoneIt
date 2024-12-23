@@ -9,11 +9,11 @@
 
     <TextView
         android:id="@+id/welcomeText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Welcome to Todo"
-        android:textSize="40sp"
-        android:textStyle="bold"
+        android:layout_width="352dp"
+        android:layout_height="41dp"
+        android:fontFamily="@font/poppins_bold"
+        android:text="@string/welcome_to_doneit"
+        android:textSize="35sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,45 +24,56 @@
         android:id="@+id/loginText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Please Login to continue"
-        android:textSize="20sp"
+        android:layout_marginTop="1dp"
+        android:fontFamily="@font/poppins_regular"
+        android:text="@string/please_login_to_continue"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/welcomeText" />
 
     <Button
         android:id="@+id/loginButton"
-        android:layout_width="110dp"
+        android:layout_width="126dp"
         android:layout_height="wrap_content"
+        android:backgroundTint="#1187DE"
+        android:fontFamily="@font/poppins_bold"
         android:text="@string/login"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/loginText"
-        app:layout_constraintVertical_bias="0.1" />
+        app:layout_constraintVertical_bias="0.03" />
 
     <Button
         android:id="@+id/registerButton"
-        android:layout_width="110dp"
+        android:layout_width="126dp"
         android:layout_height="wrap_content"
+        android:backgroundTint="#1187DE"
+        android:fontFamily="@font/poppins_bold"
         android:text="@string/register"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/loginButton" />
 
     <ImageView
         android:id="@+id/logodoneit"
-        android:layout_width="180dp"
-        android:layout_height="550dp"
+        android:layout_width="185dp"
+        android:layout_height="183dp"
+        android:layout_marginBottom="8dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/doneit"
+        android:scaleType="fitCenter"
         android:src="@drawable/logodoneit"
+        app:layout_constraintBottom_toTopOf="@id/welcomeText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/logodoneit" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

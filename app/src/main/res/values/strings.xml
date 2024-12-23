@@ -23,6 +23,10 @@
     <string name="new_task">New Task</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="hello_blank_fragment">Hello Blank Fragment</string>
+    <string name="welcome_to_doneit">Welcome to DoneIt</string>
+    <string name="please_login_to_continue">Please Login to continue</string>
+    <string name="doneit">DONEIT</string>
+    <string name="reglog">REGLOG</string>
     <string-array name="priority">
         <item>Low</item>
         <item>Medium</item>
