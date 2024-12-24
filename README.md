@@ -1,10 +1,14 @@
-# Todo
+# DoneIt
 
-Todo - a task management application built for Android
+DoneIt – A Task Management App for Your Productivity
 
 ## Details
 
-Todo is a basic task manager/todo list built for Android. It is built using Kotlin, MVVM / Clean Architecture, Fragments, Dagger & Hilt, with Firebase for the backend (Authentication & Firestore). The interface is built with Material 3 and uses the system preference to determine light/dark mode.
+DoneIt is your ultimate productivity partner, designed exclusively for Android users who want to take control of their tasks and goals. Built with the latest tech and a sleek interface, DoneIt combines efficiency and elegance to help you stay on top of your busy schedule.
+
+DoneIt is a sleek and efficient task management app for Android, built using Kotlin, MVVM/Clean Architecture, and Firebase for seamless and secure functionality. With a modern Material 3 design, it adapts to light or dark mode based on your system preferences.
+
+Whether it’s daily errands or big goals, DoneIt makes organizing tasks simple, so you can focus on what matters most. Get things done effortlessly with DoneIt! 
 
 ## Screenshots
 
