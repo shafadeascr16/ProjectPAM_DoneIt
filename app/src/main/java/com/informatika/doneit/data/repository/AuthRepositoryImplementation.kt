@@ -28,42 +28,57 @@ class AuthRepositoryImplementation @Inject constructor(
     ) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { it ->
-                if(it.isSuccessful) {
-                user.id = it.result.user?.uid ?: ""
-                updateUserInfo(user) { state ->
-                    if (state is UiState.Success) {
-                        storeSession(id = it.result.user?.uid ?: "") {
-                            if(it == null) {
-                                result.invoke(UiState.Failure("Registration successful, Failed to store session."))
-                            } else {
-                                result.invoke(UiState.Success("Registration Successful!"))
+                if (it.isSuccessful) {
+                    val firebaseUser = it.result.user
+                    if (firebaseUser != null) {
+                        // Set displayName
+                        firebaseUser.updateProfile(com.google.firebase.auth.UserProfileChangeRequest.Builder()
+                            .setDisplayName(user.name)
+                            .build())
+                            .addOnCompleteListener { updateTask ->
+                                if (updateTask.isSuccessful) {
+                                    user.id = firebaseUser.uid
+                                    updateUserInfo(user) { state ->
+                                        if (state is UiState.Success) {
+                                            storeSession(id = firebaseUser.uid) { storedUser ->
+                                                if (storedUser == null) {
+                                                    result.invoke(UiState.Failure("Registration successful, Failed to store session."))
+                                                } else {
+                                                    result.invoke(UiState.Success("Registration Successful!"))
+                                                }
+                                            }
+                                        } else if (state is UiState.Failure) {
+                                            result.invoke(UiState.Failure(state.error))
+                                        }
+                                    }
+                                } else {
+                                    result.invoke(UiState.Failure("Failed to set display name"))
+                                }
                             }
-                        }
+                    } else {
+                        result.invoke(UiState.Failure("Failed to create user"))
                     }
-                    else if (state is UiState.Failure) {
-                        result.invoke(UiState.Failure(state.error))
+                } else {
+                    try {
+                        throw it.exception ?: Exception("Invalid authentication")
+                    } catch (e: FirebaseAuthWeakPasswordException) {
+                        result.invoke(UiState.Failure("Authentication failed, please use a stronger password"))
+                    } catch (e: FirebaseAuthInvalidCredentialsException) {
+                        result.invoke(UiState.Failure("Authentication failed, email invalid"))
+                    } catch (e: FirebaseAuthUserCollisionException) {
+                        result.invoke(UiState.Failure("Authentication failed, email already exists"))
+                    } catch (e: Exception) {
+                        result.invoke(UiState.Failure(e.message))
                     }
-                }
-            } else {
-                try {
-                    throw it.exception ?: java.lang.Exception("Invalid authentication")
-                } catch (e: FirebaseAuthWeakPasswordException) {
-                    result.invoke(UiState.Failure("Authentication failed, please use a stronger password"))
-                } catch (e: FirebaseAuthInvalidCredentialsException) {
-                    result.invoke(UiState.Failure("Authentication failed, email invalid"))
-                } catch (e: FirebaseAuthUserCollisionException) {
-                    result.invoke(UiState.Failure("Authentication failed, email already exists"))
-                } catch (e: Exception) {
-                    result.invoke(UiState.Failure(e.message))
                 }
             }
-        } .addOnFailureListener {
-            result.invoke(
-                UiState.Failure(
-                    it.localizedMessage
+            .addOnFailureListener {
+                result.invoke(
+                    UiState.Failure(
+                        it.localizedMessage
+                    )
                 )
-            )
-        }
+            }
     }
 
     override fun loginUser(email: String, password: String, result: (UiState<String>) -> Unit) {
@@ -86,7 +101,7 @@ class AuthRepositoryImplementation @Inject constructor(
     }
 
     override fun forgotPassword(email: String, result: (UiState<String>) -> Unit) {
-        auth.sendPasswordResetEmail(email).addOnCompleteListener{ task ->
+        auth.sendPasswordResetEmail(email).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 result.invoke(UiState.Success("Password reset email has been sent"))
             } else {
@@ -99,16 +114,16 @@ class AuthRepositoryImplementation @Inject constructor(
 
     override fun logout(result: () -> Unit) {
         auth.signOut()
-        appPreferences.edit().putString(SharedPrefConstants.USER_SESSION,null).apply()
+        appPreferences.edit().putString(SharedPrefConstants.USER_SESSION, null).apply()
         result.invoke()
     }
 
     override fun getSession(result: (User?) -> Unit) {
-        val userSession = appPreferences.getString(SharedPrefConstants.USER_SESSION,null)
-        if (userSession == null){
+        val userSession = appPreferences.getString(SharedPrefConstants.USER_SESSION, null)
+        if (userSession == null) {
             result.invoke(null)
-        }else{
-            val user = gson.fromJson(userSession,User::class.java)
+        } else {
+            val user = gson.fromJson(userSession, User::class.java)
             result.invoke(user)
         }
     }
@@ -118,7 +133,7 @@ class AuthRepositoryImplementation @Inject constructor(
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     val user = it.result.toObject(User::class.java)
-                    appPreferences.edit().putString(SharedPrefConstants.USER_SESSION,gson.toJson(user)).apply()
+                    appPreferences.edit().putString(SharedPrefConstants.USER_SESSION, gson.toJson(user)).apply()
                     result.invoke(user)
                 } else {
                     result.invoke(null)
@@ -132,9 +147,9 @@ class AuthRepositoryImplementation @Inject constructor(
         val document = database.collection(FireStoreCollection.USER).document(user.id)
         document.set(user)
             .addOnSuccessListener {
-                result.invoke(UiState.Success("User has been update successfully"))
-                }.addOnFailureListener {
-                    result.invoke(UiState.Failure(it.localizedMessage))
-                }
+                result.invoke(UiState.Success("User has been updated successfully"))
+            }.addOnFailureListener {
+                result.invoke(UiState.Failure(it.localizedMessage))
+            }
     }
 }

@@ -36,7 +36,19 @@ class AccountFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val textView = requireView().findViewById(R.id.nameTextField) as TextView
-        textView.text = "Hello, " + user?.displayName
+        val displayName = user?.displayName
+        val email = user?.email
+
+        if (displayName != null && displayName.isNotEmpty()) {
+            textView.text = "Hello, $displayName"
+        } else if (email != null && email.isNotEmpty()) {
+            textView.text = "Hello, $email"
+        } else {
+            textView.text = "Hello, User"
+        }
+
+        println("DisplayName: $displayName")
+        println("Email: $email")
 
         binding.logoutButton.setOnClickListener {
             viewModel.logout {
@@ -44,4 +56,5 @@ class AccountFragment : Fragment() {
             }
         }
     }
+
 }

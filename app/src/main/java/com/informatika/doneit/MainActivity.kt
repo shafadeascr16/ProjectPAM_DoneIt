@@ -2,7 +2,6 @@ package com.informatika.doneit
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
@@ -29,21 +28,24 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
+
         if (user != null) {
             loadFragment(HomeFragment())
         } else {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
+            finish() // Menutup MainActivity jika pengguna belum login
         }
+
         setupOnClickListener()
     }
 
     private fun setupOnClickListener() {
         binding.bottomNavigation.setOnItemSelectedListener {
-            val fragment = when(it.itemId){
-                R.id.home -> { HomeFragment() }
-                R.id.account -> { AccountFragment() }
-                else -> { HomeFragment() }
+            val fragment = when (it.itemId) {
+                R.id.home -> HomeFragment()
+                R.id.account -> AccountFragment()
+                else -> HomeFragment()
             }
             loadFragment(fragment)
             true
@@ -55,11 +57,5 @@ class MainActivity : AppCompatActivity() {
             .beginTransaction()
             .replace(R.id.container, fragment)
             .commit()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
     }
 }

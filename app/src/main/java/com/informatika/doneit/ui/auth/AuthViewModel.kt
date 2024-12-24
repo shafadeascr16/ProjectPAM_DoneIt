@@ -12,7 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     val repository: AuthRepository
-): ViewModel() {
+) : ViewModel() {
 
     private val TAG = "AuthViewModel"
     private val _register = MutableLiveData<UiState<String>>()
@@ -48,11 +48,11 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun logout(result: () -> Unit){
+    fun logout(result: () -> Unit) {
         repository.logout(result)
     }
 
-    fun getSession(result: (User?) -> Unit){
+    fun getSession(result: (User?) -> Unit) {
         repository.getSession(result)
     }
 }
