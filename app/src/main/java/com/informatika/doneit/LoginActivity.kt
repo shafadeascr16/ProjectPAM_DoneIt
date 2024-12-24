@@ -68,7 +68,6 @@ class LoginActivity : AppCompatActivity() {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
         when (currentFragment) {
             is WelcomeFragment -> {
-                // Jika di WelcomeFragment, tidak melakukan apa-apa
                 return false
             }
             is LoginFragment, is RegisterFragment -> {
