@@ -57,10 +57,14 @@ class TaskRepositoryImplementation @Inject constructor(
                     return@addOnSuccessListener
                 }
 
-                // Update the task
+                // Update the task using update() instead of set()
                 database.collection(FireStoreCollection.TASKS)
                     .document(task.id)
-                    .set(task)
+                    .update(
+                        "title", task.title,
+                        "description", task.description,
+                        "dueDate", task.dueDate // Add other fields as necessary
+                    )
                     .addOnSuccessListener {
                         result(UiState.Success(Pair(task, "Task updated successfully")))
                     }
@@ -72,6 +76,7 @@ class TaskRepositoryImplementation @Inject constructor(
                 result(UiState.Failure(e.message ?: "Error checking task ownership"))
             }
     }
+
 
     override fun deleteTask(task: Task, result: (UiState<Pair<Task,String>>) -> Unit) {
         val currentUser = auth.currentUser
