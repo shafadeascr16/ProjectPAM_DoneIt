@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.informatika.doneit.databinding.ActivityLoginBinding
+import com.informatika.doneit.ui.auth.ForgotPasswordFragment
 import com.informatika.doneit.ui.auth.LoginFragment
 import com.informatika.doneit.ui.auth.RegisterFragment
 import com.informatika.doneit.ui.auth.WelcomeFragment
@@ -26,7 +27,8 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true) // Menampilkan tombol "Up"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
 
         loadFragment(WelcomeFragment())
     }
@@ -35,8 +37,13 @@ class LoginActivity : AppCompatActivity() {
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.container, fragment)
-            .addToBackStack(null) // Menambahkan fragment ke back stack
+            .addToBackStack(null)
             .commit()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     override fun onBackPressed() {
@@ -44,18 +51,18 @@ class LoginActivity : AppCompatActivity() {
         when (currentFragment) {
             is WelcomeFragment -> {
                 if (doubleBackToExitPressedOnce) {
-                    finishAffinity() // Menutup aplikasi jika tidak ada fragment lain di back stack
+                    finishAffinity()
                     return
                 }
 
                 this.doubleBackToExitPressedOnce = true
-                Toast.makeText(this, "Pencet sekali lagi untuk keluar", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Press again to exit", Toast.LENGTH_SHORT).show()
 
                 handler.postDelayed({
                     doubleBackToExitPressedOnce = false
-                }, 2000) // 2 detik
+                }, 2000)
             }
-            is LoginFragment, is RegisterFragment -> {
+            is LoginFragment, is RegisterFragment, is ForgotPasswordFragment -> {
                 loadFragment(WelcomeFragment())
             }
             else -> {
@@ -64,24 +71,8 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
-        when (currentFragment) {
-            is WelcomeFragment -> {
-                return false
-            }
-            is LoginFragment, is RegisterFragment -> {
-                loadFragment(WelcomeFragment())
-                return true
-            }
-            else -> {
-                return super.onSupportNavigateUp()
-            }
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
-        handler.removeCallbacksAndMessages(null) // Menghapus semua callback handler saat activity dihancurkan
+        handler.removeCallbacksAndMessages(null)
     }
 }

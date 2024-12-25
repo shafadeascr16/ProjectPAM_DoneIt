@@ -13,120 +13,171 @@ class TaskRepositoryImplementation @Inject constructor(
     val database: FirebaseFirestore
 ) : TaskRepository {
 
-        override fun addTask(task: Task, result: (UiState<Pair<Task,String>>) -> Unit) {
-            database.collection(FireStoreCollection.TASKS)
-                .document(auth.currentUser?.uid ?: "")
-                .collection(FireStoreCollection.TASKS)
-                .add(task)
-                .addOnSuccessListener {
-                    result.invoke(UiState.Success(Pair(task,"Task added successfully!")))
-                }
-                .addOnFailureListener {
-                    result.invoke(UiState.Failure(it.message))
-                }
+    override fun addTask(task: Task, result: (UiState<Pair<Task, String>>) -> Unit) {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            result(UiState.Failure("User not authenticated"))
+            return
         }
 
-        override fun updateTask(task: Task, result: (UiState<Pair<Task,String>>) -> Unit) {
+        val taskId = task.id.ifEmpty {
             database.collection(FireStoreCollection.TASKS)
-                .document(auth.currentUser?.uid ?: "")
-                .collection(FireStoreCollection.TASKS)
-                .document(task.id)
-                .set(task)
-                .addOnSuccessListener {
-                    result.invoke(UiState.Success(Pair(task, "Task updated successfully!")))
-                }
-                .addOnFailureListener {
-                    result.invoke(UiState.Failure(it.message))
-                }
+                .document().id
         }
 
-        override fun deleteTask(task: Task, result: (UiState<Pair<Task,String>>) -> Unit) {
-            database.collection(FireStoreCollection.TASKS)
-                .document(auth.currentUser?.uid ?: "")
-                .collection(FireStoreCollection.TASKS)
-                .document(task.id)
-                .delete()
-                .addOnSuccessListener {
-                    result.invoke(UiState.Success(Pair(task, "Task deleted successfully!")))
-                }
-                .addOnFailureListener {
-                    result.invoke(UiState.Failure(it.message))
-                }
+        task.id = taskId
+        task.userId = currentUser.uid
+
+        database.collection(FireStoreCollection.TASKS)
+            .document(taskId)
+            .set(task)
+            .addOnSuccessListener {
+                result(UiState.Success(Pair(task, "Task added successfully")))
+            }
+            .addOnFailureListener { e ->
+                result(UiState.Failure(e.message ?: "Error adding task"))
+            }
+    }
+
+    override fun updateTask(task: Task, result: (UiState<Pair<Task, String>>) -> Unit) {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            result(UiState.Failure("User not authenticated"))
+            return
         }
+
+        // Ensure the task belongs to the current user
+        database.collection(FireStoreCollection.TASKS)
+            .document(task.id)
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                val existingTask = documentSnapshot.toObject(Task::class.java)
+                if (existingTask?.userId != currentUser.uid) {
+                    result(UiState.Failure("Unauthorized to update this task"))
+                    return@addOnSuccessListener
+                }
+
+                // Update the task
+                database.collection(FireStoreCollection.TASKS)
+                    .document(task.id)
+                    .set(task)
+                    .addOnSuccessListener {
+                        result(UiState.Success(Pair(task, "Task updated successfully")))
+                    }
+                    .addOnFailureListener { e ->
+                        result(UiState.Failure(e.message ?: "Error updating task"))
+                    }
+            }
+            .addOnFailureListener { e ->
+                result(UiState.Failure(e.message ?: "Error checking task ownership"))
+            }
+    }
+
+    override fun deleteTask(task: Task, result: (UiState<Pair<Task,String>>) -> Unit) {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            result(UiState.Failure("User not authenticated"))
+            return
+        }
+
+        // Ensure the task belongs to the current user
+        database.collection(FireStoreCollection.TASKS)
+            .document(task.id)
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                val existingTask = documentSnapshot.toObject(Task::class.java)
+                if (existingTask?.userId != currentUser.uid) {
+                    result(UiState.Failure("Unauthorized to delete this task"))
+                    return@addOnSuccessListener
+                }
+
+                // Delete the task
+                database.collection(FireStoreCollection.TASKS)
+                    .document(task.id)
+                    .delete()
+                    .addOnSuccessListener {
+                        result(UiState.Success(Pair(task, "Task deleted successfully!")))
+                    }
+                    .addOnFailureListener {
+                        result(UiState.Failure(it.message))
+                    }
+            }
+            .addOnFailureListener { e ->
+                result(UiState.Failure(e.message ?: "Error checking task ownership"))
+            }
+    }
 
     override fun getTasks(user: User?, result: (UiState<List<Task>>) -> Unit) {
-            database.collection(FireStoreCollection.TASKS)
-                .document(auth.currentUser?.uid ?: "")
-                .collection(FireStoreCollection.TASKS)
-                .get()
-                .addOnSuccessListener {
-                    val tasks = it.toObjects(Task::class.java)
-                    result.invoke(UiState.Success(tasks.filterNotNull()))
-                }
-                .addOnFailureListener {
-                    result.invoke(UiState.Failure(it.message))
-                }
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            result(UiState.Failure("User not authenticated"))
+            return
         }
 
-        override fun getTask(id: String, result: (UiState<Pair<Task,String>>) -> Unit) {
-            database.collection(FireStoreCollection.TASKS)
-                .document(auth.currentUser?.uid ?: "")
-                .collection(FireStoreCollection.TASKS)
-                .document(id)
-                .get()
-                .addOnSuccessListener {
-                    val task = it.toObject(Task::class.java)
-                    if(task != null) {
-                        result.invoke(UiState.Success(Pair(task, "Task deleted successfully!")))
+        database.collection(FireStoreCollection.TASKS)
+            .whereEqualTo("userId", currentUser.uid)
+            .get()
+            .addOnSuccessListener {
+                val tasks = it.toObjects(Task::class.java)
+                result.invoke(UiState.Success(tasks.filterNotNull()))
+            }
+            .addOnFailureListener {
+                result.invoke(UiState.Failure(it.message))
+            }
+    }
+
+    override fun getTask(id: String, result: (UiState<Pair<Task,String>>) -> Unit) {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            result(UiState.Failure("User not authenticated"))
+            return
+        }
+
+        database.collection(FireStoreCollection.TASKS)
+            .document(id)
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                val task = documentSnapshot.toObject(Task::class.java)
+                if (task != null) {
+                    // Check if the task belongs to the current user
+                    if (task.userId == currentUser.uid) {
+                        result.invoke(UiState.Success(Pair(task, "Task retrieved successfully!")))
                     } else {
-                        result.invoke(UiState.Failure("Task not found!"))
+                        result.invoke(UiState.Failure("Unauthorized to access this task"))
                     }
+                } else {
+                    result.invoke(UiState.Failure("Task not found!"))
                 }
-                .addOnFailureListener {
-                    result.invoke(UiState.Failure(it.message))
-                }
+            }
+            .addOnFailureListener {
+                result.invoke(UiState.Failure(it.message))
+            }
+    }
+
+    override fun storeTasks(tasks: List<Task>, result: (UiState<String>) -> Unit) {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            result(UiState.Failure("User not authenticated"))
+            return
         }
 
-        override fun storeTasks(tasks: List<Task>, result: (UiState<String>) -> Unit) {
-            database.collection(FireStoreCollection.TASKS)
-                .document(auth.currentUser?.uid ?: "")
-                .collection(FireStoreCollection.TASKS)
-                .get()
-                .addOnSuccessListener {
-                    val tasksInDatabase = it.toObjects(Task::class.java)
-                    val tasksToAdd = tasks.filter { task ->
-                        tasksInDatabase.find { it.id == task.id } == null
-                    }
-                    val tasksToUpdate = tasks.filter { task ->
-                        tasksInDatabase.find { it.id == task.id } != null
-                    }
-                    val tasksToDelete = tasksInDatabase.filter { task ->
-                        tasks.find { it.id == task.id } == null
-                    }
-                    tasksToAdd.forEach { task ->
-                        database.collection(FireStoreCollection.TASKS)
-                            .document(auth.currentUser?.uid ?: "")
-                            .collection(FireStoreCollection.TASKS)
-                            .add(task)
-                    }
-                    tasksToUpdate.forEach { task ->
-                        database.collection(FireStoreCollection.TASKS)
-                            .document(auth.currentUser?.uid ?: "")
-                            .collection(FireStoreCollection.TASKS)
-                            .document(task.id)
-                            .set(task)
-                    }
-                    tasksToDelete.forEach { task ->
-                        database.collection(FireStoreCollection.TASKS)
-                            .document(auth.currentUser?.uid ?: "")
-                            .collection(FireStoreCollection.TASKS)
-                            .document(task.id)
-                            .delete()
-                    }
-                    result.invoke(UiState.Success("Tasks stored successfully!"))
-                }
-                .addOnFailureListener {
-                    result.invoke(UiState.Failure(it.message))
-                }
+        // Filter tasks to only include tasks belonging to the current user
+        val userTasks = tasks.filter { it.userId == currentUser.uid }
+
+        // Batch write operations
+        val batch = database.batch()
+
+        userTasks.forEach { task ->
+            val docRef = database.collection(FireStoreCollection.TASKS).document(task.id)
+            batch.set(docRef, task)
         }
+
+        batch.commit()
+            .addOnSuccessListener {
+                result.invoke(UiState.Success("Tasks stored successfully!"))
+            }
+            .addOnFailureListener {
+                result.invoke(UiState.Failure(it.message))
+            }
+    }
 }

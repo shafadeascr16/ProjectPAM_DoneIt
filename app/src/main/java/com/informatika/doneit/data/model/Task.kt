@@ -3,14 +3,16 @@ package com.informatika.doneit.data.model
 import android.os.Parcelable
 import com.google.firebase.firestore.DocumentId
 import kotlinx.parcelize.Parcelize
+import java.util.UUID
 
 @Parcelize
 data class Task(
-    @DocumentId var id: String = "", // This is the id of the document in the database
-    var title: String = "", // This is the title of the task
-    var description: String = "", // This is the description of the task
-    var priority: String = "", // Low, Medium, High
-    var dueDate: String = "", // 2021-01-01
-    var location: String = "", // 123.123, 123.123
-    var completed: Boolean = false // true or false
+    @DocumentId var id: String = UUID.randomUUID().toString(),
+    var userId: String = "",
+    var title: String = "",
+    var description: String = "",
+    var priority: String = "",
+    var dueDate: String = "",
+    var location: String = "",
+    var completed: Boolean = false
 ) : Parcelable
