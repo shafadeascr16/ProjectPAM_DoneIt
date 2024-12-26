@@ -63,7 +63,9 @@ class TaskRepositoryImplementation @Inject constructor(
                     .update(
                         "title", task.title,
                         "description", task.description,
-                        "dueDate", task.dueDate // Add other fields as necessary
+                        "priority", task.priority,
+                        "dueDate", task.dueDate,
+                        "location", task.location
                     )
                     .addOnSuccessListener {
                         result(UiState.Success(Pair(task, "Task updated successfully")))
