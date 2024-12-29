@@ -65,7 +65,8 @@ class TaskRepositoryImplementation @Inject constructor(
                         "description", task.description,
                         "priority", task.priority,
                         "dueDate", task.dueDate,
-                        "location", task.location
+                        "location", task.location,
+                        "completed", task.completed
                     )
                     .addOnSuccessListener {
                         result(UiState.Success(Pair(task, "Task updated successfully")))
