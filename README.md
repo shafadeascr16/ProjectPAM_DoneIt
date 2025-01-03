@@ -8,9 +8,6 @@ https://play.google.com/store/apps/details?id=com.informatika.doneit
 ## Pitch Deck
 https://drive.google.com/file/d/1rj20VXccwLFrUfEODIuOe7eFf2LAeC9w/view?usp=drive_link
 
-## Pitch Deck Slides
-https://www.canva.com/design/DAGa7-PoFSY/Nd1ECQkNyr3s2qhfozlqYA/edit?utm_content=DAGa7-PoFSY&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
-
 ## Details
 
 DoneIt is your ultimate productivity partner, designed exclusively for Android users who want to take control of their tasks and goals. Built with the latest tech and a sleek interface, DoneIt combines efficiency and elegance to help you stay on top of your busy schedule.
