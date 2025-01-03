@@ -2,6 +2,9 @@
 
 DoneIt – A Task Management App for Your Productivity
 
+## Available on Playstore
+https://play.google.com/store/apps/details?id=com.informatika.doneit
+
 ## Pitch Deck
 https://drive.google.com/file/d/1rj20VXccwLFrUfEODIuOe7eFf2LAeC9w/view?usp=drive_link
 
